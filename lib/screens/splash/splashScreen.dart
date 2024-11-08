@@ -1,4 +1,5 @@
 import 'package:college_tinder/common/components/buttonDesign.dart';
+import 'package:college_tinder/screens/login/loginScreen.dart';
 import 'package:college_tinder/screens/login/signupScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -153,7 +154,10 @@ class _SplashScreenState extends State<SplashScreen> {
                       color: Colors.black),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>const LoginScreen()));
+
+                  },
                   child: Text(
                     "Sign In",
                     style: TextStyle(

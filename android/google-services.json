@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "258237932870",
+    "project_id": "college-hearts-demo",
+    "storage_bucket": "college-hearts-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258237932870:android:2b4dcb337b5e3136f9f147",
+        "android_client_info": {
+          "package_name": "com.collegehearts.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258237932870-6551d6ig15h1ge7joqe0lih0bbdflg7d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBH2QOcaCGYDITkRgmqqCc6DN7na9ItrpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258237932870-6551d6ig15h1ge7joqe0lih0bbdflg7d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "258237932870-lrlufu15ql3shb1ct2gd14im7umemh6f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.collegeTinder"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

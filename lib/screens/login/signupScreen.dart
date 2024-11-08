@@ -1,8 +1,13 @@
 import 'package:college_tinder/common/components/buttonDesign.dart';
 import 'package:college_tinder/screens/login/phoneSignupScreen.dart';
+import 'package:college_tinder/screens/login/providers/google.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
+
+import 'backend.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -14,7 +19,7 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
-
+    final authWrapper = Provider.of<Authentication>(context); // Listen to changes in authProvider
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -94,7 +99,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     onTap: (){},
                     child: Image.asset("assets/signup/Facebook.png"),
                   ),InkWell(
-                    onTap: (){},
+                    onTap: ()async{
+                      UserCredential? credential=await signInWithGoogle();
+                      if (credential != null) {
+                        await authWrapper.processCredentials(credential);
+                      }
+                    },
                     child: Image.asset("assets/signup/Google.png"),
                   ),InkWell(
                     onTap: (){},

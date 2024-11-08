@@ -45,5 +45,53 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+        <array>
+          <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>firebase auth</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+              <string>app-1-258237932870-ios-e1742336d16c38c7f9f147</string>
+            </array>
+          </dict>
+          <dict>
+          		<key>CFBundleTypeRole</key>
+          		<string>Editor</string>
+          		<key>CFBundleURLSchemes</key>
+          		<array>
+          			<string>com.googleusercontent.apps.258237932870-lrlufu15ql3shb1ct2gd14im7umemh6f</string>
+          		</array>
+          	</dict>
+        </array>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to allow you to take photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to allow you to choose photos.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to your photo library to save photos.</string>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+      <string>remote-notification</string>
+    </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to provide better services.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location to provide better services.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>We need contacts access to help you connect with friends.</string>
+    <key>GIDClientID</key>
+    <string>258237932870-lrlufu15ql3shb1ct2gd14im7umemh6f.apps.googleusercontent.com</string>
+
+
 </dict>
 </plist>

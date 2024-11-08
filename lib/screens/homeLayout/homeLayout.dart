@@ -5,6 +5,9 @@ import 'package:college_tinder/screens/matches/matches.dart';
 import 'package:college_tinder/screens/messages/messagesScreen.dart';
 import 'package:college_tinder/screens/profile/profileScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../login/backend.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -14,13 +17,17 @@ class HomeLayout extends StatefulWidget {
 }
 
 class _HomeLayoutState extends State<HomeLayout> {
-  final List<Widget> screens=[
-    Feedscreen(),
-MatchesScreen(),
-Messagesscreen(),
-    ProfileScreen(),  ];
+
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<Authentication>(context,listen: false);
+    final List<Widget> screens=[
+      Feedscreen(),
+      MatchesScreen(),
+      Messagesscreen(),
+      ProfileScreen(userData:authProvider.userProfile!),
+    ];
     return Scaffold(
       backgroundColor: Colors.white,
       body: SizedBox(

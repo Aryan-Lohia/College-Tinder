@@ -1,14 +1,8 @@
 import 'package:college_tinder/common/components/buttonDesign.dart';
 import 'package:college_tinder/screens/homeLayout/homeLayout.dart';
-import 'package:college_tinder/screens/profile/profileCreationScreen2.dart';
-import 'package:custom_pin_screen/custom_pin_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
-import '';
-
-import '../../common/components/datePicker.dart';
-import '../../common/components/pinCodeField.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class NotificationsPermissionsScreen extends StatefulWidget {
   const NotificationsPermissionsScreen({super.key});
@@ -18,16 +12,21 @@ class NotificationsPermissionsScreen extends StatefulWidget {
 }
 
 class _NotificationsPermissionsScreenState extends State<NotificationsPermissionsScreen> {
-
-
   @override
   void initState() {
     super.initState();
+    _checkPermissions();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Future<void> _checkPermissions() async {
+    PermissionStatus status = await Permission.notification.status;
+    if (status.isGranted) {
+      // Permission already granted, navigate to home screen
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(builder: (context) => const HomeLayout()),
+      );
+    }
   }
 
   @override
@@ -37,7 +36,7 @@ class _NotificationsPermissionsScreenState extends State<NotificationsPermission
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(30, 100, 30, 40),
+        padding: const EdgeInsets.fromLTRB(30, 100, 30, 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,13 +45,13 @@ class _NotificationsPermissionsScreenState extends State<NotificationsPermission
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                       context,
                       CupertinoPageRoute(
                           builder: (context) =>
-                          const HomeLayout()),(Route<dynamic> route) => false);
+                          const HomeLayout()));
                 },
-                child: Text(
+                child: const Text(
                   "Skip",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -61,34 +60,44 @@ class _NotificationsPermissionsScreenState extends State<NotificationsPermission
                 ),
               ),
             ),
-            SizedBox(height: 80,),
+            const SizedBox(height: 80,),
             Image.asset("assets/permissions/chat.png"),
-            SizedBox(height: 60,),
-            Text(
+            const SizedBox(height: 60,),
+            const Text(
               "Enable Notifications",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 30,
                   color: Colors.black),
             ),
-            SizedBox(height: 10,),
-
-            Text(
-              "Get push-notification when you get the match or receive a message.",
+            const SizedBox(height: 10,),
+            const Text(
+              "Get push-notifications when you get a match or receive a message.",
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14,
                   color: Colors.black),
             ),
-            Spacer(),
+            const Spacer(),
             InkWell(
-              onTap:(){
-                Navigator.pushAndRemoveUntil(context, CupertinoPageRoute(builder: (context)=>const HomeLayout()),(Route<dynamic> route) => false);
+              onTap: () async {
+                PermissionStatus status = await Permission.notification.request();
+                if (status.isGranted) {
+                  // Permission granted, navigate to home screen
+                  Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(builder: (context) => const HomeLayout()),
+                  );
+                } else {
+                  // Handle permission denial
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Notification permission is required!')),
+                  );
+                }
               },
-
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20.0, 40,20,0),
+                padding: const EdgeInsets.fromLTRB(20.0, 40, 20, 0),
                 child: MainButtonDesign(text: "Continue"),
               ),
             ),
@@ -98,6 +107,7 @@ class _NotificationsPermissionsScreenState extends State<NotificationsPermission
     );
   }
 }
+
 class ContactsPermissionsScreen extends StatefulWidget {
   const ContactsPermissionsScreen({super.key});
 
@@ -106,16 +116,21 @@ class ContactsPermissionsScreen extends StatefulWidget {
 }
 
 class _ContactsPermissionsScreenState extends State<ContactsPermissionsScreen> {
-
-
   @override
   void initState() {
     super.initState();
+    _checkPermissions();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Future<void> _checkPermissions() async {
+    PermissionStatus status = await Permission.contacts.status;
+    if (status.isGranted) {
+      // Permission already granted, navigate to notifications permissions screen
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(builder: (context) => const NotificationsPermissionsScreen()),
+      );
+    }
   }
 
   @override
@@ -125,7 +140,7 @@ class _ContactsPermissionsScreenState extends State<ContactsPermissionsScreen> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(30, 100, 30, 40),
+        padding: const EdgeInsets.fromLTRB(30, 100, 30, 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -137,10 +152,9 @@ class _ContactsPermissionsScreenState extends State<ContactsPermissionsScreen> {
                   Navigator.push(
                       context,
                       CupertinoPageRoute(
-                          builder: (context) =>
-                          const NotificationsPermissionsScreen()));
+                          builder: (context) => const NotificationsPermissionsScreen()));
                 },
-                child: Text(
+                child: const Text(
                   "Skip",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -149,35 +163,149 @@ class _ContactsPermissionsScreenState extends State<ContactsPermissionsScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 80,),
+            const SizedBox(height: 80,),
             Image.asset("assets/permissions/people.png"),
-            SizedBox(height: 60,),
-            Text(
-              "Search friend’s",
+            const SizedBox(height: 60,),
+            const Text(
+              "Search friends",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 30,
                   color: Colors.black),
             ),
-            SizedBox(height: 10,),
-
-            Text(
-              "You can find friends from your contact lists to connected",
+            const SizedBox(height: 10,),
+            const Text(
+              "You can find friends from your contact lists to connect",
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14,
                   color: Colors.black),
             ),
-            Spacer(),
+            const Spacer(),
             InkWell(
-              onTap:(){
-                Navigator.push(context, CupertinoPageRoute(builder: (context)=>const NotificationsPermissionsScreen()));
+              onTap: () async {
+                PermissionStatus status = await Permission.contacts.request();
+                if (status.isGranted) {
+                  // Permission granted, navigate to notifications permissions screen
+                  Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(builder: (context) => const NotificationsPermissionsScreen()),
+                  );
+                } else {
+                  // Handle the case when permission is denied
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Contact permission is required!')),
+                  );
+                }
               },
-
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20.0, 40,20,0),
-                child: MainButtonDesign(text: "Access to a contact list"),
+                padding: const EdgeInsets.fromLTRB(20.0, 40, 20, 0),
+                child: MainButtonDesign(text: "Access contact list"),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class LocationPermissionsScreen extends StatefulWidget {
+  const LocationPermissionsScreen({super.key});
+
+  @override
+  State<LocationPermissionsScreen> createState() => _LocationPermissionsScreenState();
+}
+
+class _LocationPermissionsScreenState extends State<LocationPermissionsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    PermissionStatus status = await Permission.contacts.status;
+    if (status.isGranted) {
+      // Permission already granted, navigate to notifications permissions screen
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(builder: (context) => const ContactsPermissionsScreen()),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.fromLTRB(30, 100, 30, 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => const ContactsPermissionsScreen()));
+                },
+                child: const Text(
+                  "Skip",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xffe94057)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 80,),
+            Image.asset("assets/permissions/people.png"),
+            const SizedBox(height: 60,),
+            const Text(
+              "Find Nearby People",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.black),
+            ),
+            const SizedBox(height: 10,),
+            const Text(
+              "You can find nearby people to connect and chat with!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14,
+                  color: Colors.black),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () async {
+                PermissionStatus status = await Permission.location.request();
+                if (status.isGranted) {
+                  // Permission granted, navigate to notifications permissions screen
+                  Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(builder: (context) => const ContactsPermissionsScreen()),
+                  );
+                } else {
+                  // Handle the case when permission is denied
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Location permission is required!')),
+                  );
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 40, 20, 0),
+                child: MainButtonDesign(text: "Access Location"),
               ),
             ),
           ],

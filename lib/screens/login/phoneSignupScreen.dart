@@ -1,10 +1,12 @@
 import 'package:college_tinder/common/components/buttonDesign.dart';
 import 'package:college_tinder/screens/login/otpScreen.dart';
+import 'package:college_tinder/screens/login/providers/phone.dart';
+import 'package:flutter/services.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart'; // For state management
+import 'package:fluttertoast/fluttertoast.dart'; // Import fluttertoast
 
 class PhoneSignupScreen extends StatefulWidget {
   const PhoneSignupScreen({super.key});
@@ -15,8 +17,13 @@ class PhoneSignupScreen extends StatefulWidget {
 
 class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
   Country? selectedCountry;
+  String phoneNumber = "";
+  bool isLoading = false; // To handle loading state
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<PhoneAuthentication>(context, listen: false); // Authentication Provider
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -35,18 +42,16 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
                   color: Colors.black),
             ),
             const Text(
-              "Please enter your valid phone number. We will send you a 4-digit code to verify your account. ",
+              "Please enter your valid phone number. We will send you a 4-digit code to verify your account.",
               style: TextStyle(
                   fontWeight: FontWeight.w300,
                   fontSize: 16,
                   color: Colors.black),
             ),
-
-            SizedBox(height: 40,),
-
+            SizedBox(height: 40),
             Container(
               height: 70,
-              padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -56,20 +61,18 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         showCountryPicker(
                           context: context,
                           countryListTheme: CountryListThemeData(
                             flagSize: 25,
                             backgroundColor: Colors.white,
                             textStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                            bottomSheetHeight: 500, // Optional. Country list modal height
-                            //Optional. Sets the border radius for the bottomsheet.
+                            bottomSheetHeight: 500,
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20.0),
                               topRight: Radius.circular(20.0),
                             ),
-                            //Optional. Styles the search field.
                             inputDecoration: InputDecoration(
                               labelText: 'Search',
                               hintText: 'Start typing to search',
@@ -81,32 +84,36 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
                               ),
                             ),
                           ),
-                          onSelect: (Country country){
-                            selectedCountry=country;
+                          onSelect: (Country country) {
                             setState(() {
-
+                              selectedCountry = country;
                             });
                           },
                         );
                       },
-
                       child: Row(
                         children: [
-                          Text(selectedCountry?.flagEmoji??"",style: TextStyle(fontSize: 25),),
-                          Text(" (+${selectedCountry?.phoneCode??"+91"}) "),
+                          Text(selectedCountry?.flagEmoji ?? "", style: TextStyle(fontSize: 25)),
+                          Text(" (+${selectedCountry?.phoneCode ?? "91"}) "),
                           Icon(Icons.arrow_drop_down),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
                             child: VerticalDivider(),
                           ),
-                          Container(
-                            width: 200,
+                          SizedBox(
+                            width: 180,
                             child: TextField(
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                               keyboardType: TextInputType.phone,
+                              onChanged: (value) {
+                                setState(() {
+                                  phoneNumber = value;
+                                });
+                              },
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: "1234567890",
-                                hintStyle: TextStyle(color: Colors.black.withOpacity(0.2))
+                                hintStyle: TextStyle(color: Colors.black.withOpacity(0.2)),
                               ),
                             ),
                           )
@@ -119,10 +126,66 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(30.0, 80, 30, 30),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>const OtpScreen()));
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator()) // Show loading indicator while processing
+                  : InkWell(
+                onTap: () async {
+                  if (phoneNumber.isNotEmpty && selectedCountry != null) {
+                    // Add the country code to the phone number
+                    final fullPhone = '+${selectedCountry!.phoneCode}$phoneNumber';
+                    if(await authProvider.checkIfUserExists(fullPhone, null)){
+                      Fluttertoast.showToast(
+                        msg: "Number Already Exists. Please try logging in.",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                      return;
+                    }
+                    setState(() {
+                      isLoading = true; // Start loading
+                    });
 
+                    try {
+                      // Trigger OTP sending
+                      await authProvider.linkPhoneNumber(fullPhone);
+
+                      // Navigate to OTP Screen
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(builder: (context) => OtpScreen(phone: fullPhone)),
+                      );
+                    } catch (e) {
+                      // Show toast if phone number already exists or other errors
+                      Fluttertoast.showToast(
+                        msg: "Failed to send OTP. Please check your phone number.",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    } finally {
+                      setState(() {
+                        isLoading = false; // Stop loading
+                      });
+                    }
+                  } else {
+                    // Show toast if phone number or country is not selected
+                    Fluttertoast.showToast(
+                      msg: "Please enter a valid phone number and select your country.",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
+                  }
                 },
                 child: MainButtonDesign(text: "Continue"),
               ),

@@ -49,9 +49,9 @@ class PinCodeField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      height: 70,
-      width: 70,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      height: 50,
+      width: 50,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         color: getFillColorFromIndex,
         borderRadius: BorderRadius.circular(10),
